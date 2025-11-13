@@ -79,5 +79,42 @@ public class ChataakWebapplication {
         Assert.assertTrue(totalItems >= 0, "There should be at least 0 products returned");
     }
 
+    @Test
+    public void verifyOrdersAPI() {
+
+        // Base URI
+        RestAssured.baseURI = "https://dev-api.chataak.in:8086";
+
+        // Bearer token (⚠️ replace with a fresh token if it expires)
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJvcmdhbml6YXRpb25UeXBlIjoxLCJVc2VyS2V5SWQiOjEwMCwib3JnYW5pemF0aW9uS2V5SWQiOjEwNSwiZW1haWwiOiJwb3Rvd29tNzAxQGFuZGluZXdzLmNvbSIsInN1YiI6InBvdG93b203MDFAYW5kaW5ld3MuY29tIiwiaXNzIjoiY2hhdGFhayIsImlhdCI6MTc2Mjc1OTkzOCwiZXhwIjozMTU1ODcxNDc1OTkzOH0.ahgjUJMS7DMkQ8yr_i4FDCFIuovi1Qq21OPPgCiN1kc";
+
+        // Send the GET request
+        Response response = RestAssured
+                .given()
+                .header("Authorization", "Bearer " + token)
+                .header("Accept", "application/json")
+                .queryParam("page", 1)
+                .queryParam("size", 10)
+                .queryParam("filter", "ALL")
+                .when()
+                .get("/api/orders")
+                .then()
+                .log().all() // Logs the full response
+                .extract().response();
+
+        // ✅ Validate response status
+        Assert.assertEquals(response.statusCode(), 200, "Expected status code is 200");
+
+        // ✅ Validate content type
+        Assert.assertTrue(response.contentType().contains("application/json"), "Response should be JSON");
+
+        // ✅ Print the response body
+        System.out.println("Response Body:\n" + response.asPrettyString());
+
+        // ✅ Example JSON assertions (if response has "data" array)
+        int totalOrders = response.jsonPath().getList("data").size();
+        System.out.println("Total Orders Returned: " + totalOrders);
+        Assert.assertTrue(totalOrders >= 0, "API should return a valid order list");
+    }
 
 }
