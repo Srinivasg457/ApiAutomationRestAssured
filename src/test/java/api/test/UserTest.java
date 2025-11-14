@@ -12,6 +12,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.path.json.JsonPath.config;
 
 public class UserTest {
 
@@ -58,6 +59,42 @@ public class UserTest {
 
         Assert.assertEquals(response.getStatusCode(), 201);
     }
+
+
+    @Test(priority = 3)
+    public void testUpdateCustomer() {
+
+        ReadConfig config = new ReadConfig();
+        String cookie = config.getSharePointCookies();
+
+        String digest = SharePointAuth.getDigest(cookie);
+        String entityType = SharePointAuth.getListItemEntityTypeFullName(cookie, "Customers");
+
+        userpayload.setAbbProjectNumber("ABB-" + faker.number().randomDigitNotZero());
+        userpayload.setAddress(faker.address().fullAddress());
+        userpayload.setCity(faker.address().cityName());
+        userpayload.setContactPerson(faker.name().fullName());
+        userpayload.setCustomerCode("CUST-" + faker.number().numberBetween(100, 999));
+        userpayload.setEmail(faker.internet().emailAddress());
+        userpayload.setName(faker.name().firstName());
+        userpayload.setPhone(faker.phoneNumber().subscriberNumber(10));
+        userpayload.setPostalCode(faker.address().zipCode());
+        userpayload.setState(faker.address().state());
+
+        Response response = userEndPoints.updateCustomer(
+                userpayload,
+                digest,
+                cookie,
+                entityType
+        );
+
+        Assert.assertEquals(response.getStatusCode(), 204);
+    }
+
+
+
+
+
 
 
 
