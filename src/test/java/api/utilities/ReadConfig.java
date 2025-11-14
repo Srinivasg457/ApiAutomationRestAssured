@@ -20,4 +20,9 @@ public class ReadConfig {
     public  String getABBSPCookie() {
         return properties.getProperty("ABBSPCookie");
     }
+
+    public String getSharePointCookies() {
+        return "FedAuth=" + properties.getProperty("FedAuth") +
+                "; rtFa=" + properties.getProperty("rtFa");
+    }
 }
